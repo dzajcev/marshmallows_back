@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1" author="dzaitsev">
+        <createTable tableName="goods">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="goodsPK"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="goods" columnName="id"/>
+        <createTable tableName="prices">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pricePK"/>
+            </column>
+            <column name="good_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="float">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="prices" columnName="id"/>
+        <createIndex tableName="prices" indexName="price_good_idx">
+            <column name="good_id"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="good_id"
+                                 baseTableName="prices"
+                                 constraintName="fk_prices_good"
+                                 referencedColumnNames="id"
+                                 referencedTableName="goods"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"/>
+    </changeSet>
+    <changeSet id="2" author="dzaitsev">
+        <createTable tableName="clients">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="clientsPK"/>
+            </column>
+            <column name="name" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="default_delivery_address" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="phone" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="link_channels" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="clients" columnName="id"/>
+        <createTable tableName="orders">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="ordersPK"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deadline_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="varchar(1000)"/>
+            <column name="link_channel" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pre_payment_sum" type="float"/>
+            <column name="shipped" type="boolean"/>
+            <column name="complete_date" type="timestamp"/>
+            <column name="delivery_address" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="client_id"
+                                 baseTableName="orders"
+                                 constraintName="fk_clients_orders"
+                                 referencedColumnNames="id"
+                                 referencedTableName="clients"
+                                 onDelete="RESTRICT"
+                                 onUpdate="CASCADE"/>
+        <addAutoIncrement tableName="orders" columnName="id"/>
+        <createTable tableName="order_lines">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="orderLinesPK"/>
+            </column>
+            <column name="num" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="good_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="count" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="done" type="boolean"/>
+            <column name="order_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="good_id"
+                                 baseTableName="order_lines"
+                                 constraintName="fk_goods_order_lines"
+                                 referencedColumnNames="id"
+                                 referencedTableName="goods"
+                                 onDelete="RESTRICT"
+                                 onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseColumnNames="price_id"
+                                 baseTableName="order_lines"
+                                 constraintName="fk_price_order_lines"
+                                 referencedColumnNames="id"
+                                 referencedTableName="prices"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"/>
+        <addForeignKeyConstraint baseColumnNames="order_id"
+                                 baseTableName="order_lines"
+                                 constraintName="fk_orders_order_lines"
+                                 referencedColumnNames="id"
+                                 referencedTableName="orders"
+                                 onDelete="RESTRICT"
+                                 onUpdate="CASCADE"/>
+        <addAutoIncrement tableName="order_lines" columnName="id"/>
+    </changeSet>
+</databaseChangeLog>
