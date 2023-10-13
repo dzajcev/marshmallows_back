@@ -10,6 +10,7 @@ import com.dzaitsev.marshmallows.dto.Order;
 import com.dzaitsev.marshmallows.dto.OrderLine;
 import com.dzaitsev.marshmallows.exceptions.ClientNotFoundException;
 import com.dzaitsev.marshmallows.exceptions.PriceNotFoundException;
+import com.dzaitsev.marshmallows.mappers.OrderMapper;
 import com.dzaitsev.marshmallows.service.OrdersService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ public class OrdersServiceImpl implements OrdersService {
     private final OrderRepository orderRepository;
     private final ClientRepository clientRepository;
     private final GoodsRepository goodsRepository;
+
+    private final OrderMapper orderMapper;
 
     @Override
     @Transactional
@@ -75,5 +78,12 @@ public class OrdersServiceImpl implements OrdersService {
                     .build();
         }).toList()));
         orderRepository.save(ord);
+    }
+
+    @Override
+    @Transactional
+    public List<Order> getOrders() {
+        return StreamSupport.stream(orderRepository.findAll().spliterator(), false)
+                .map(orderMapper::toDto).toList();
     }
 }

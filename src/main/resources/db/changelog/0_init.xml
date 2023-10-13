@@ -147,4 +147,14 @@
                                  onUpdate="CASCADE"/>
         <addAutoIncrement tableName="order_lines" columnName="id"/>
     </changeSet>
+    <changeSet id="3" author="dzaitsev">
+        <addColumn tableName="goods">
+            <column name="description" type="varchar(1000)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="4" author="dzaitsev">
+        <addColumn tableName="clients">
+            <column name="comment" type="varchar(1000)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

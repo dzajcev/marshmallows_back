@@ -1,11 +1,12 @@
 package com.dzaitsev.marshmallows.service.impl;
 
-import com.dzaitsev.marshmallows.dto.Good;
-import com.dzaitsev.marshmallows.service.GoodsService;
 import com.dzaitsev.marshmallows.dao.entity.GoodEntity;
 import com.dzaitsev.marshmallows.dao.entity.PriceEntity;
 import com.dzaitsev.marshmallows.dao.repository.GoodsRepository;
 import com.dzaitsev.marshmallows.dao.repository.OrderLineRepository;
+import com.dzaitsev.marshmallows.dto.Good;
+import com.dzaitsev.marshmallows.mappers.GoodMapper;
+import com.dzaitsev.marshmallows.service.GoodsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,17 +27,13 @@ public class GoodsServiceImpl implements GoodsService {
 
     private final OrderLineRepository orderLineRepository;
 
+    private final GoodMapper goodMapper;
+
     @Override
     @Transactional
     public List<Good> getGoods() {
         return StreamSupport.stream(goodsRepository.findAll().spliterator(), false)
-                .map(m -> Good.builder()
-                        .id(m.getId())
-                        .name(m.getName())
-                        .price(m.getPrices().stream().max(Comparator.comparing(PriceEntity::getCreateDate))
-                                .map(PriceEntity::getPrice)
-                                .orElse(null))
-                        .build()).toList();
+                .map(goodMapper::toDto).toList();
     }
 
     @Override
@@ -47,12 +44,13 @@ public class GoodsServiceImpl implements GoodsService {
                 .orElse(GoodEntity.builder()
                         .build());
         goodEntity.setName(good.getName());
+        goodEntity.setDescription(good.getDescription());
         List<PriceEntity> prices = goodEntity.getPrices();
         if (prices == null) {
             goodEntity.setPrices(new ArrayList<>());
             goodEntity.getPrices().add(PriceEntity.builder()
-                            .price(good.getPrice())
-                            .good(goodEntity)
+                    .price(good.getPrice())
+                    .good(goodEntity)
                     .build());
         } else {
             goodEntity.getPrices().stream().max(Comparator.comparing(PriceEntity::getCreateDate))

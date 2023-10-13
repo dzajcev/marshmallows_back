@@ -24,6 +24,9 @@ public class GoodEntity {
     @Column(name = "create_date")
     private LocalDateTime createDate;
 
+    @Column(name = "description")
+    private String description;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "good")
     private List<PriceEntity> prices;
 

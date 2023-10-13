@@ -34,6 +34,9 @@ public class ClientEntity {
     @Column(name = "link_channels")
     private String linkChannels;
 
+    @Column(name = "comment")
+    private String comment;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "client")
     private List<OrderEntity> orders;
 

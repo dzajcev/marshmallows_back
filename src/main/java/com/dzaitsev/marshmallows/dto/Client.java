@@ -21,6 +21,7 @@ public class Client {
 
     private String phone;
 
+    private String comment;
     private List<LinkChannel> linkChannels;
 
 
