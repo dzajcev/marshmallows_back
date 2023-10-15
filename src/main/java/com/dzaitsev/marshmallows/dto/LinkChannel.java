@@ -2,7 +2,7 @@ package com.dzaitsev.marshmallows.dto;
 
 public enum LinkChannel {
     TELEGRAM,
-    WHATSUP,
+    WHATSAPP,
     SMS,
     PHONE
 }
