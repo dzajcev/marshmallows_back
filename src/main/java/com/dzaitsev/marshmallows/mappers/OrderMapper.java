@@ -21,9 +21,11 @@ public class OrderMapper extends Mapper<Order, OrderEntity> {
                 .createDate(orderEntity.getCreateDate())
                 .deadline(orderEntity.getDeadline())
                 .deliveryAddress(orderEntity.getDeliveryAddress())
-                .linkChannel(orderEntity.getLinkChannel())
                 .prePaymentSum(orderEntity.getPrePaymentSum())
-                .shipped(orderEntity.getShipped())
+                .shipped(orderEntity.isShipped())
+                .phone(orderEntity.getPhone())
+                .needDelivery(orderEntity.isNeedDelivery())
+                .paySum(orderEntity.getPaySum())
                 .orderLines(orderEntity.getOrderLines().stream()
                         .map(orderLineMapper::toDto).toList())
                 .build();

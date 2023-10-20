@@ -8,5 +8,7 @@ public interface GoodsService {
 
     List<Good> getGoods();
 
+    Good getGood(Integer id);
+
     void saveGood(Good good);
 }

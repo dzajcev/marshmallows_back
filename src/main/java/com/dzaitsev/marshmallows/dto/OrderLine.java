@@ -21,7 +21,7 @@ public class OrderLine {
 
     private Double price;
 
-    private Boolean done;
+    private boolean done;
 
     private Integer count;
 

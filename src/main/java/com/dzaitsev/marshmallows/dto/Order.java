@@ -19,11 +19,11 @@ public class Order {
 
     private LocalDate deadline;
 
-    private LinkChannel linkChannel;
-
     private String comment;
 
     private String deliveryAddress;
+
+    private String phone;
 
     private Client client;
 
@@ -31,7 +31,11 @@ public class Order {
 
     private Double prePaymentSum;
 
-    private Boolean shipped;
+    private Double paySum;
+
+    private boolean shipped;
+
+    private boolean needDelivery;
 
     private LocalDateTime completeDate;
 

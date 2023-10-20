@@ -1,11 +1,11 @@
 package com.dzaitsev.marshmallows.dao.entity;
 
-import com.dzaitsev.marshmallows.dto.LinkChannel;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,31 +26,40 @@ public class OrderEntity {
     @Column(name = "deadline_date")
     private LocalDate deadline;
 
-    @Column(name = "link_channel")
-    @Enumerated(EnumType.STRING)
-    private LinkChannel linkChannel;
-
     @Column(name = "comment")
     private String comment;
 
     @Column(name = "delivery_address")
     private String deliveryAddress;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Column(name = "phone")
+    private String phone;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "client_id")
     private ClientEntity client;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "order")
-    private List<OrderLineEntity> orderLines;
+    private List<OrderLineEntity> orderLines = new ArrayList<>();
 
     @Column(name = "pre_payment_sum")
     private Double prePaymentSum;
 
+    @Column(name = "pay_sum")
+    private Double paySum;
+
     @Column(name = "shipped")
-    private Boolean shipped;
+    private boolean shipped;
 
     @Column(name = "complete_date")
     private LocalDateTime completeDate;
+
+    @Column(name = "need_delivery")
+    private boolean needDelivery;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "delivery_id")
+    private DeliveryEntity delivery;
 
     @PrePersist
     private void prePersist() {

@@ -8,6 +8,8 @@ public interface ClientsService {
 
     List<Client> getClients();
 
+    Client getClient(Integer id);
+
     void saveClient(Client client);
 
 }

@@ -1,0 +1,27 @@
+package com.dzaitsev.marshmallows.controllers;
+
+import com.dzaitsev.marshmallows.exceptions.ClientNotFoundException;
+import com.dzaitsev.marshmallows.exceptions.GoodNotFoundException;
+import com.dzaitsev.marshmallows.exceptions.OrderNotFoundException;
+import com.dzaitsev.marshmallows.exceptions.PriceNotFoundException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+@ControllerAdvice
+public class RestResponseEntityExceptionHandler 
+  extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(value
+      = { OrderNotFoundException.class, ClientNotFoundException.class, PriceNotFoundException.class,
+            PriceNotFoundException.class, GoodNotFoundException.class})
+    protected ResponseEntity<Object> handleConflict(
+      RuntimeException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(),
+          new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+}

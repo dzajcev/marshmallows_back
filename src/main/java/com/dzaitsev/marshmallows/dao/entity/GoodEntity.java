@@ -31,7 +31,7 @@ public class GoodEntity {
     private List<PriceEntity> prices;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "good")
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, mappedBy = "good")
     private List<OrderLineEntity> orderLines;
 
 

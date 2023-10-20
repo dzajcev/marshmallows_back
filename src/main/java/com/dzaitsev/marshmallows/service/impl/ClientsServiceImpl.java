@@ -3,19 +3,20 @@ package com.dzaitsev.marshmallows.service.impl;
 import com.dzaitsev.marshmallows.dao.entity.ClientEntity;
 import com.dzaitsev.marshmallows.dao.repository.ClientRepository;
 import com.dzaitsev.marshmallows.dto.Client;
-import com.dzaitsev.marshmallows.dto.LinkChannel;
+import com.dzaitsev.marshmallows.exceptions.ClientNotFoundException;
 import com.dzaitsev.marshmallows.mappers.ClientMapper;
 import com.dzaitsev.marshmallows.service.ClientsService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ClientsServiceImpl implements ClientsService {
 
     private final ClientRepository clientRepository;
@@ -28,6 +29,13 @@ public class ClientsServiceImpl implements ClientsService {
                 .map(clientMapper::toDto)
                 .toList();
 
+    }
+
+    @Override
+    public Client getClient(Integer id) {
+        return clientRepository.findById(id)
+                .map(clientMapper::toDto)
+                .orElseThrow(() -> new ClientNotFoundException(String.format("client with id %s not found", id)));
     }
 
     @Override

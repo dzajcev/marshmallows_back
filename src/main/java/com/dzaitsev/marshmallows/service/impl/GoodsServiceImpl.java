@@ -5,6 +5,8 @@ import com.dzaitsev.marshmallows.dao.entity.PriceEntity;
 import com.dzaitsev.marshmallows.dao.repository.GoodsRepository;
 import com.dzaitsev.marshmallows.dao.repository.OrderLineRepository;
 import com.dzaitsev.marshmallows.dto.Good;
+import com.dzaitsev.marshmallows.exceptions.DeliveryNotFoundException;
+import com.dzaitsev.marshmallows.exceptions.GoodNotFoundException;
 import com.dzaitsev.marshmallows.mappers.GoodMapper;
 import com.dzaitsev.marshmallows.service.GoodsService;
 import jakarta.transaction.Transactional;
@@ -21,6 +23,7 @@ import java.util.stream.StreamSupport;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class GoodsServiceImpl implements GoodsService {
 
     private final GoodsRepository goodsRepository;
@@ -30,14 +33,19 @@ public class GoodsServiceImpl implements GoodsService {
     private final GoodMapper goodMapper;
 
     @Override
-    @Transactional
     public List<Good> getGoods() {
         return StreamSupport.stream(goodsRepository.findAll().spliterator(), false)
                 .map(goodMapper::toDto).toList();
     }
 
     @Override
-    @Transactional
+    public Good getGood(Integer id) {
+        return goodsRepository.findById(id)
+                .map(goodMapper::toDto)
+                .orElseThrow(() -> new GoodNotFoundException(String.format("good with id %s not found", id)));
+    }
+
+    @Override
     public void saveGood(Good good) {
         GoodEntity goodEntity = Optional.ofNullable(good.getId())
                 .flatMap(m -> goodsRepository.findById(good.getId()))
