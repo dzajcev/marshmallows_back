@@ -22,6 +22,6 @@ public class Delivery implements Serializable {
     private LocalDate deliveryDate;
     private LocalTime start;
     private LocalTime end;
+    private DeliveryStatus deliveryStatus;
     private List<Order> orders = new ArrayList<>();
-
 }

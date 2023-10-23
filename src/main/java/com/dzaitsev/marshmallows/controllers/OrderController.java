@@ -34,6 +34,12 @@ public class OrderController {
         return new OrdersResponse(Collections.singletonList(ordersService.getOrder(id)));
     }
 
+    @GetMapping(value = "/delivery", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public OrdersResponse getOrdersForDelivery() {
+        return new OrdersResponse(ordersService.getOrdersForDelivery());
+    }
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public void saveOrder(@RequestBody Order order) {
@@ -45,4 +51,16 @@ public class OrderController {
     public void deleteOrder(@PathVariable("id") Integer id) {
         ordersService.deleteOrder(id);
     }
+
+    @GetMapping(value = "/notification/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean clientIsNotificated(@PathVariable("id") Integer id){
+        return ordersService.clientIsNotificated(id);
+    }
+    @PutMapping(value = "/notification/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void setClientIsNotificated(@PathVariable("id") Integer id){
+        ordersService.setClientIsNotificated(id);
+    }
+
 }

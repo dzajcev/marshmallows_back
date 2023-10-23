@@ -1,5 +1,6 @@
 package com.dzaitsev.marshmallows.dao.entity;
 
+import com.dzaitsev.marshmallows.dto.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -60,6 +61,14 @@ public class OrderEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "delivery_id")
     private DeliveryEntity delivery;
+
+    @Column(name = "client_notificated")
+    private boolean clientNotificated;
+
+    @Column(name = "order_status")
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+
 
     @PrePersist
     private void prePersist() {

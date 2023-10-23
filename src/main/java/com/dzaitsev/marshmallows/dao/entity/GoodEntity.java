@@ -21,6 +21,8 @@ public class GoodEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "is_active")
+    private boolean active;
     @Column(name = "create_date")
     private LocalDateTime createDate;
 

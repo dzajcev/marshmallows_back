@@ -5,7 +5,6 @@ import com.dzaitsev.marshmallows.dao.entity.PriceEntity;
 import com.dzaitsev.marshmallows.dao.repository.GoodsRepository;
 import com.dzaitsev.marshmallows.dao.repository.OrderLineRepository;
 import com.dzaitsev.marshmallows.dto.Good;
-import com.dzaitsev.marshmallows.exceptions.DeliveryNotFoundException;
 import com.dzaitsev.marshmallows.exceptions.GoodNotFoundException;
 import com.dzaitsev.marshmallows.mappers.GoodMapper;
 import com.dzaitsev.marshmallows.service.GoodsService;
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -33,9 +33,18 @@ public class GoodsServiceImpl implements GoodsService {
     private final GoodMapper goodMapper;
 
     @Override
-    public List<Good> getGoods() {
-        return StreamSupport.stream(goodsRepository.findAll().spliterator(), false)
-                .map(goodMapper::toDto).toList();
+    public List<Good> getGoods(Boolean isActive) {
+        Stream<GoodEntity> result;
+        if (Boolean.TRUE.equals(isActive)) {
+            result = goodsRepository.findGoodsEntitiesByActive(true);
+        } else if (Boolean.FALSE.equals(isActive)) {
+            result = goodsRepository.findGoodsEntitiesByActive(false);
+        } else {
+            result = StreamSupport.stream(goodsRepository.findAll().spliterator(), false);
+        }
+        return result
+                .map(goodMapper::toDto)
+                .toList();
     }
 
     @Override
@@ -52,6 +61,7 @@ public class GoodsServiceImpl implements GoodsService {
                 .orElse(GoodEntity.builder()
                         .build());
         goodEntity.setName(good.getName());
+        goodEntity.setActive(good.isActive());
         goodEntity.setDescription(good.getDescription());
         List<PriceEntity> prices = goodEntity.getPrices();
         if (prices == null) {
@@ -76,5 +86,29 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         goodsRepository.save(goodEntity);
+    }
+
+    @Override
+    public void deleteGood(Integer id) {
+        goodsRepository.findById(id)
+                .ifPresent(goodEntity -> {
+                    if (!goodEntity.getOrderLines().isEmpty()) {
+                        goodEntity.setActive(false);
+                    } else {
+                        goodsRepository.delete(goodEntity);
+                    }
+                });
+    }
+
+    @Override
+    public void restoreGood(Integer id) {
+        goodsRepository.findById(id)
+                .ifPresent(clientEntity -> clientEntity.setActive(true));
+    }
+
+    @Override
+    public boolean goodWithOrderLines(Integer id) {
+        return goodsRepository.findById(id)
+                .map(m -> !m.getOrderLines().isEmpty()).orElse(false);
     }
 }

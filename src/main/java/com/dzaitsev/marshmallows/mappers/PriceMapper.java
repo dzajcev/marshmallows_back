@@ -9,6 +9,9 @@ public class PriceMapper extends Mapper<Price, PriceEntity> {
 
     @Override
     public Price toDto(PriceEntity priceEntity) {
+        if (priceEntity == null) {
+            return null;
+        }
         return Price.builder()
                 .id(priceEntity.getId())
                 .createDate(priceEntity.getCreateDate())

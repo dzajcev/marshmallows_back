@@ -1,5 +1,6 @@
 package com.dzaitsev.marshmallows.dto;
 
+import com.dzaitsev.marshmallows.dao.entity.OrderLineEntity;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -38,5 +39,9 @@ public class Order {
     private boolean needDelivery;
 
     private LocalDateTime completeDate;
+
+    private boolean clientNotificated;
+
+    private OrderStatus orderStatus;
 
 }

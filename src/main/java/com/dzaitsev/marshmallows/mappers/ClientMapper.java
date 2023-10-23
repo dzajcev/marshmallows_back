@@ -11,12 +11,16 @@ import java.util.stream.Stream;
 public class ClientMapper extends Mapper<Client, ClientEntity> {
     @Override
     public Client toDto(ClientEntity clientEntity) {
+        if (clientEntity == null) {
+            return null;
+        }
         return Client.builder()
                 .id(clientEntity.getId())
                 .name(clientEntity.getName())
                 .comment(clientEntity.getComment())
                 .createDate(clientEntity.getCreateDate())
                 .phone(clientEntity.getPhone())
+                .active(clientEntity.isActive())
                 .defaultDeliveryAddress(clientEntity.getDefaultDeliveryAddress())
                 .linkChannels(Stream.of(clientEntity.getLinkChannels().split(";"))
                         .map(LinkChannel::valueOf).toList())

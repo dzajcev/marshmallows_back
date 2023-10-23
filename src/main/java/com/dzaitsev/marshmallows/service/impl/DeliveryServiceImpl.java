@@ -7,6 +7,8 @@ import com.dzaitsev.marshmallows.dao.repository.OrderRepository;
 import com.dzaitsev.marshmallows.dto.Delivery;
 import com.dzaitsev.marshmallows.dto.DeliveryStatus;
 import com.dzaitsev.marshmallows.dto.Order;
+import com.dzaitsev.marshmallows.dto.OrderStatus;
+import com.dzaitsev.marshmallows.exceptions.DeleteDeliveryNotAllowException;
 import com.dzaitsev.marshmallows.exceptions.DeliveryNotFoundException;
 import com.dzaitsev.marshmallows.mappers.DeliveryMapper;
 import com.dzaitsev.marshmallows.service.DeliveryService;
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,9 +59,24 @@ public class DeliveryServiceImpl implements DeliveryService {
         deliveryEntity.setStart(delivery.getStart());
         deliveryEntity.getOrders().addAll(orderEntities);
         deliveryEntity.getOrders().forEach(o -> {
-            o.setShipped(collect.get(o.getId()));
+            Boolean shipped = collect.get(o.getId());
+            if (!shipped) {
+                o.setOrderStatus(OrderStatus.IN_DELIVERY);
+            } else {
+                o.setOrderStatus(OrderStatus.SHIPPED);
+            }
+            o.setShipped(shipped);
             o.setDelivery(deliveryEntity);
         });
+
+        if (deliveryEntity.getOrders() != null && (deliveryEntity.getOrders().stream().allMatch(OrderEntity::isShipped))) {
+            deliveryEntity.setDeliveryStatus(DeliveryStatus.DONE);
+        } else if (deliveryEntity.getOrders() != null && (deliveryEntity.getOrders().stream().anyMatch(f -> !f.isShipped())
+                && deliveryEntity.getOrders().stream().anyMatch(OrderEntity::isShipped))) {
+            deliveryEntity.setDeliveryStatus(DeliveryStatus.IN_PROGRESS);
+        } else {
+            deliveryEntity.setDeliveryStatus(DeliveryStatus.NEW);
+        }
         deliveryRepository.save(deliveryEntity);
 
     }
@@ -71,13 +90,30 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public List<Delivery> getDeliveries(LocalDate start, LocalDate end, List<DeliveryStatus> statuses) {
-        return StreamSupport.stream( deliveryRepository.findAll().spliterator(),false).map(deliveryMapper::toDto).toList();
-//        return deliveryRepository.findByCriteria(start, end, statuses).stream()
-//                .map(deliveryMapper::toDto).toList();
+        return deliveryRepository.findOrderEntitiesByCreateDateAfterAndCreateDateBeforeAndDeliveryStatusIn(Optional.ofNullable(start)
+                                .map(LocalDate::atStartOfDay).orElse(LocalDateTime.of(2020, 1, 1, 0, 0, 0)),
+                        Optional.ofNullable(end)
+                                .map(LocalDate::atStartOfDay).orElse(LocalDateTime.of(2050, 1, 1, 0, 0, 0)),
+                        Optional.ofNullable(statuses).orElse(new ArrayList<>())).stream()
+                .map(deliveryMapper::toDto).toList();
     }
 
     @Override
     public void deleteDelivery(Integer id) {
-        deliveryRepository.deleteById(id);
+        DeliveryEntity deliveryEntity = deliveryRepository.findById(id)
+                .orElseThrow(() -> new DeliveryNotFoundException(String.format("Доставка %s не найдена", id)));
+        Delivery delivery = deliveryMapper.toDto(deliveryEntity);
+        if (allowToDelete(delivery)) {
+            deliveryEntity.getOrders().forEach(o -> o.setDelivery(null));
+            deliveryEntity.getOrders().clear();
+            deliveryRepository.deleteById(id);
+        }
+    }
+
+    private boolean allowToDelete(Delivery delivery) {
+        if (delivery.getDeliveryStatus() != DeliveryStatus.NEW) {
+            throw new DeleteDeliveryNotAllowException("Удаление доставки не разрешено, т.к. статус доставки не допускает его удаление");
+        }
+        return true;
     }
 }

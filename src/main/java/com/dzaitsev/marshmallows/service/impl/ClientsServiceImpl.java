@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -24,11 +25,24 @@ public class ClientsServiceImpl implements ClientsService {
     private final ClientMapper clientMapper;
 
     @Override
-    public List<Client> getClients() {
-        return StreamSupport.stream(clientRepository.findAll().spliterator(), false)
+    public List<Client> getClients(Boolean isActive) {
+        Stream<ClientEntity> result;
+        if (Boolean.TRUE.equals(isActive)) {
+            result = clientRepository.findClientEntitiesByActive(true);
+        } else if (Boolean.FALSE.equals(isActive)) {
+            result = clientRepository.findClientEntitiesByActive(false);
+        } else {
+            result = StreamSupport.stream(clientRepository.findAll().spliterator(), false);
+        }
+        return result
                 .map(clientMapper::toDto)
                 .toList();
+    }
 
+    @Override
+    public boolean clientWithOrders(Integer id) {
+       return clientRepository.findById(id)
+                .map(m -> !m.getOrders().isEmpty()).orElse(false);
     }
 
     @Override
@@ -49,6 +63,7 @@ public class ClientsServiceImpl implements ClientsService {
                     .id(client.getId())
                     .build();
         }
+        cl.setActive(client.isActive());
         cl.setName(client.getName());
         cl.setComment(client.getComment());
         cl.setDefaultDeliveryAddress(client.getDefaultDeliveryAddress());
@@ -56,5 +71,23 @@ public class ClientsServiceImpl implements ClientsService {
         cl.setLinkChannels(client.getLinkChannels().stream()
                 .map(Enum::name).collect(Collectors.joining(";")));
         clientRepository.save(cl);
+    }
+
+    @Override
+    public void deleteClient(Integer id) {
+        clientRepository.findById(id)
+                .ifPresent(clientEntity -> {
+                    if (!clientEntity.getOrders().isEmpty()) {
+                        clientEntity.setActive(false);
+                    } else {
+                        clientRepository.delete(clientEntity);
+                    }
+                });
+    }
+
+    @Override
+    public void restoreClient(Integer id) {
+        clientRepository.findById(id)
+                .ifPresent(clientEntity -> clientEntity.setActive(true));
     }
 }

@@ -46,7 +46,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                 Subquery<OrderEntity> subquery1 = cq.subquery(OrderEntity.class);
                 Root<OrderLineEntity> inProgress1 = subquery1.from(OrderLineEntity.class);
                 subquery1.where(cb.and(cb.equal(inProgress1.get("order").get("id"), order.get("id"))), cb.isTrue(inProgress1.get("done")));
-                statusPredicates.add(cb.and(cb.isFalse(order.get("shipped")), cb.or(cb.exists(subquery), cb.exists(subquery1))));
+                statusPredicates.add(cb.and(cb.isFalse(order.get("shipped")), cb.and(cb.exists(subquery), cb.exists(subquery1))));
             }
             if (statuses.contains(OrderStatus.DONE)) {
                 Subquery<OrderEntity> subquery = cq.subquery(OrderEntity.class);

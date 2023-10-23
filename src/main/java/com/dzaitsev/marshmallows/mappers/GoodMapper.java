@@ -12,12 +12,17 @@ import java.util.Comparator;
 @RequiredArgsConstructor
 public class GoodMapper extends Mapper<Good, GoodEntity> {
     private final PriceMapper priceMapper;
+
     @Override
     public Good toDto(GoodEntity goodEntity) {
+        if (goodEntity == null) {
+            return null;
+        }
         return Good.builder()
                 .id(goodEntity.getId())
                 .description(goodEntity.getDescription())
                 .name(goodEntity.getName())
+                .active(goodEntity.isActive())
                 .price(goodEntity.getPrices().stream()
                         .max(Comparator.comparing(PriceEntity::getCreateDate))
                         .map(PriceEntity::getPrice)

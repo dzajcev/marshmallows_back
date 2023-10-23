@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 public class ClientResponse {
 
-    private List<Client> clients;
+    private List<Client> items;
 }

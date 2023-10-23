@@ -1,6 +1,6 @@
 package com.dzaitsev.marshmallows.dao.entity;
 
-import com.dzaitsev.marshmallows.dto.Order;
+import com.dzaitsev.marshmallows.dto.DeliveryStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 public class DeliveryEntity implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "create_date")
     private LocalDateTime createDate;
@@ -29,6 +30,26 @@ public class DeliveryEntity implements Serializable {
     private LocalTime start;
     @Column(name = "end_time")
     private LocalTime end;
-    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, mappedBy = "delivery")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "delivery")
     private List<OrderEntity> orders = new ArrayList<>();
+
+    @Column(name = "delivery_status")
+    @Enumerated(EnumType.STRING)
+    private DeliveryStatus deliveryStatus;
+
+    @PrePersist
+    private void prePersist() {
+        createDate = LocalDateTime.now();
+    }
+
+    public DeliveryStatus getDeliveryStatus() {
+        if (getOrders() != null && (getOrders().stream().allMatch(OrderEntity::isShipped))) {
+            return DeliveryStatus.DONE;
+        } else if (getOrders() != null && (getOrders().stream().anyMatch(f -> !f.isShipped())
+                && getOrders().stream().anyMatch(OrderEntity::isShipped))) {
+            return DeliveryStatus.IN_PROGRESS;
+        } else {
+            return DeliveryStatus.NEW;
+        }
+    }
 }

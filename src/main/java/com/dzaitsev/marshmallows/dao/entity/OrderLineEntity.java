@@ -39,7 +39,7 @@ public class OrderLineEntity {
     private OrderEntity order;
 
     @Column(name = "done")
-    private Boolean done;
+    private boolean done;
 
     @Column(name = "count")
     private Integer count;

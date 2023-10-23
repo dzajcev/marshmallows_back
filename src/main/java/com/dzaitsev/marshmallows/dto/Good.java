@@ -13,6 +13,7 @@ public class Good {
     private Integer id;
     private String name;
     private Double price;
+    private boolean active;
     private String description;
     private List<Price> prices;
 }

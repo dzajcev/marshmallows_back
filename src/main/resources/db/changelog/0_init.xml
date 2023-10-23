@@ -12,6 +12,9 @@
             <column name="create_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="is_active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
             <column name="name" type="varchar(200)">
                 <constraints nullable="false"/>
             </column>
@@ -42,8 +45,6 @@
                                  referencedColumnNames="id"
                                  referencedTableName="goods"
                                  onUpdate="CASCADE"/>
-    </changeSet>
-    <changeSet id="2" author="dzaitsev">
         <createTable tableName="clients">
             <column name="id" type="int4">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="clientsPK"/>
@@ -56,6 +57,9 @@
             </column>
             <column name="default_delivery_address" type="varchar(500)">
                 <constraints nullable="true"/>
+            </column>
+            <column name="is_active" type="boolean">
+                <constraints nullable="false"/>
             </column>
             <column name="phone" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -90,7 +94,14 @@
             </column>
             <column name="complete_date" type="timestamp"/>
             <column name="delivery_address" type="varchar(500)"/>
+            <column name="delivery_id" type="int4"/>
+            <column name="client_notificated" type="boolean">
+                <constraints nullable="false"/>
+            </column>
             <column name="phone" type="varchar(20)"/>
+            <column name="order_status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <addForeignKeyConstraint baseColumnNames="client_id"
                                  baseTableName="orders"
@@ -147,8 +158,6 @@
                                  referencedTableName="orders"
                                  onUpdate="CASCADE"/>
         <addAutoIncrement tableName="order_lines" columnName="id"/>
-    </changeSet>
-    <changeSet id="3" author="dzaitsev">
         <createTable tableName="deliveries">
             <column name="id" type="int4">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="deliveriesPK"/>
@@ -165,11 +174,11 @@
             <column name="end_time" type="time">
                 <constraints nullable="false"/>
             </column>
+            <column name="delivery_status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <addAutoIncrement tableName="deliveries" columnName="id"/>
-        <addColumn tableName="orders">
-            <column name="delivery_id" type="int4"/>
-        </addColumn>
         <addForeignKeyConstraint baseColumnNames="delivery_id"
                                  baseTableName="orders"
                                  constraintName="fk_orders_deliveries"

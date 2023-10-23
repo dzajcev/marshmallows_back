@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 public class GoodsResponse {
 
-    private List<Good> goods;
+    private List<Good> items;
 }

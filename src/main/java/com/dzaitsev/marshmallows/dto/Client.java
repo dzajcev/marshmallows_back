@@ -15,6 +15,8 @@ public class Client {
 
     private String name;
 
+    private boolean active;
+
     private LocalDateTime createDate;
 
     private String defaultDeliveryAddress;

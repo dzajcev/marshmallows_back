@@ -1,6 +1,8 @@
 package com.dzaitsev.marshmallows.controllers;
 
 import com.dzaitsev.marshmallows.dto.Delivery;
+import com.dzaitsev.marshmallows.dto.DeliveryStatus;
+import com.dzaitsev.marshmallows.dto.OrderStatus;
 import com.dzaitsev.marshmallows.dto.response.DeliveryResponse;
 import com.dzaitsev.marshmallows.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.stream.Stream;
+import java.util.List;
 
 @RestController
 @RequestMapping("/delivery")
@@ -24,8 +24,10 @@ public class DeliveryController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public DeliveryResponse getDeliveries() {
-        return new DeliveryResponse(deliveryService.getDeliveries(null, null, new ArrayList<>()));
+    public DeliveryResponse getDeliveries(@RequestParam(value = "start", required = false) LocalDate start,
+                                          @RequestParam(value = "end", required = false) LocalDate end,
+                                          @RequestParam(value = "statuses", required = false) List<DeliveryStatus> statuses) {
+        return new DeliveryResponse(deliveryService.getDeliveries(start, end, statuses));
     }
 
 
@@ -44,6 +46,6 @@ public class DeliveryController {
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void deleteDelivery(@PathVariable("id") Integer id) {
-
+        deliveryService.deleteDelivery(id);
     }
 }

@@ -22,6 +22,8 @@ public class ClientEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "is_active")
+    private boolean active;
     @Column(name = "create_date")
     private LocalDateTime createDate;
 
@@ -37,7 +39,7 @@ public class ClientEntity {
     @Column(name = "comment")
     private String comment;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "client")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "client")
     private List<OrderEntity> orders;
 
     @PrePersist
