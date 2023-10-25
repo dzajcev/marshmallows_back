@@ -1,4 +1,21 @@
 spring:
+  thymeleaf:
+    enabled: true
+  mail:
+    from: marshmallow_1@bk.ru
+    host: smtp.mail.ru
+    port: 465
+    username: marshmallow_1@bk.ru
+    password: dEgyErX5ceJm6wcXA5Cg
+    smtps:
+      auth: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtps
   liquibase:
     change-log: classpath:db/db.changelog-master.yaml
   datasource:
@@ -19,3 +36,10 @@ spring:
         order_updates: true
         order_inserts: true
         batch_versioned_data: true
+authorization:
+  verification-code-ttl: 180
+  signing:
+    key: fojsgdfuihdfogudfhdfguoidfilufjndoffnjknmkjlf
+logging:
+  level:
+    org.springframework.security: debug

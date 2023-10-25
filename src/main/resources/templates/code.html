@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title th:remove="all">Template for HTML email with inline image</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h3>Добрый день</h3>
+<p>Вы прошли регистрацию в приложении Marshmallows</p>
+<p>Для завершения регистрации необходимо в приложении в поле Код ввести присланный Вам код</p>
+<h4>Код для завершения регистрации:<span> </span><b><span th:text="${code}"/></b></h4>
+<p>Код действителен 15 минут</p>
+
+<footer>Если Вы это письмо получили случайно, просто проигнорируйте его</footer>
+</body>
+</html>
