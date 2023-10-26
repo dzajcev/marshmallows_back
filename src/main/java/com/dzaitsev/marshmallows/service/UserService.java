@@ -1,6 +1,8 @@
 package com.dzaitsev.marshmallows.service;
 
 import com.dzaitsev.marshmallows.dto.User;
+import com.dzaitsev.marshmallows.dto.auth.ChangePasswordRequest;
+import com.dzaitsev.marshmallows.dto.auth.SaveMyInfoRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Optional;
@@ -10,7 +12,8 @@ public interface UserService {
 
     User save(User user);
 
-    Optional<User> findByEmail(String email);
+    void saveMyInfo(SaveMyInfoRequest request);
 
+    Optional<User> findByEmail(String email);
 
 }

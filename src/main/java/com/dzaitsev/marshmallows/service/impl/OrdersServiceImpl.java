@@ -21,13 +21,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class OrdersServiceImpl implements OrdersService {
+public class OrdersServiceImpl extends AbstractService implements OrdersService {
     private final OrderRepository orderRepository;
     private final ClientRepository clientRepository;
     private final GoodsRepository goodsRepository;
@@ -37,16 +38,16 @@ public class OrdersServiceImpl implements OrdersService {
     public void saveOrder(Order order) {
 
         OrderEntity orderEntity = Optional.ofNullable(order.getId())
-                .flatMap(orderRepository::findById)
+                .flatMap((Function<Integer, Optional<OrderEntity>>) id -> orderRepository.findByIdAndUserCreate(id, getUserFromContext().getId()))
                 .orElse(new OrderEntity());
         List<Integer> goodIds = order.getOrderLines().stream()
                 .map(OrderLine::getGood)
                 .map(Good::getId)
                 .toList();
-        Iterable<GoodEntity> allById = goodsRepository.findAllById(goodIds);
+        Iterable<GoodEntity> allById = goodsRepository.findAllByIdInAndUserCreate(goodIds, getUserFromContext().getId());
         Map<Integer, GoodEntity> goodsMap = StreamSupport.stream(allById.spliterator(), false)
                 .collect(Collectors.toMap(GoodEntity::getId, y -> y));
-        ClientEntity client = clientRepository.findById(order.getClient().getId())
+        ClientEntity client = clientRepository.findByIdAndUserCreate(order.getClient().getId(), getUserFromContext().getId())
                 .orElseThrow(()
                         -> new ClientNotFoundException(String.format("client not found: %s", order.getClient().getName())));
         orderEntity.setClient(client);
@@ -101,18 +102,18 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public Order getOrder(Integer id) {
-        return orderRepository.findById(id)
+        return orderRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .map(orderMapper::toDto)
                 .orElseThrow(() -> new OrderNotFoundException(String.format("order with id %s not found", id)));
     }
 
     @Override
     public List<Order> getOrders(LocalDate start, LocalDate end, List<OrderStatus> statuses) {
-        return orderRepository.findOrderEntitiesByCreateDateAfterAndCreateDateBeforeAndOrderStatusIn(Optional.ofNullable(start)
+        return orderRepository.findOrderEntitiesByCreateDateAfterAndCreateDateBeforeAndOrderStatusInAndUserCreate(Optional.ofNullable(start)
                                 .map(LocalDate::atStartOfDay).orElse(LocalDateTime.of(2020, 1, 1, 0, 0, 0)),
                         Optional.ofNullable(end)
                                 .map(LocalDate::atStartOfDay).orElse(LocalDateTime.of(2050, 1, 1, 0, 0, 0)),
-                        Optional.ofNullable(statuses).orElse(new ArrayList<>())).stream()
+                        Optional.ofNullable(statuses).orElse(new ArrayList<>()), getUserFromContext().getId()).stream()
                 .map(orderMapper::toDto).toList();
     }
 
@@ -125,7 +126,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public List<Order> getOrdersForDelivery() {
-        return orderRepository.getOrdersForDelivery()
+        return orderRepository.getOrdersForDelivery(getUserFromContext().getId())
                 .stream()
                 .map(orderMapper::toDto)
                 .toList();
@@ -133,7 +134,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public boolean clientIsNotificated(Integer id) {
-        return orderRepository.findById(id)
+        return orderRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .map(orderMapper::toDto)
                 .map(Order::isClientNotificated)
                 .orElseThrow(() -> new OrderNotFoundException(String.format("Заказ %s не найден", id)));
@@ -142,13 +143,13 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Override
     public void setClientIsNotificated(Integer id) {
-        OrderEntity orderEntity = orderRepository.findById(id)
+        OrderEntity orderEntity = orderRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .orElseThrow(() -> new OrderNotFoundException(String.format("Заказ %s не найден", id)));
         orderEntity.setClientNotificated(true);
     }
 
     private boolean allowToDelete(Integer id) {
-        Order order = orderRepository.findById(id)
+        Order order = orderRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .map(orderMapper::toDto)
                 .orElseThrow(() -> new OrderNotFoundException(String.format("Заказ %s не найден", id)));
         if (order.getPrePaymentSum() != null && order.getPrePaymentSum() > 0) {

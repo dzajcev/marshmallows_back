@@ -6,7 +6,7 @@ spring:
     host: smtp.mail.ru
     port: 465
     username: marshmallow_1@bk.ru
-    password: dEgyErX5ceJm6wcXA5Cg
+    password: iQnuxaVZKxmxxQHRrtmX
     smtps:
       auth: true
     properties:

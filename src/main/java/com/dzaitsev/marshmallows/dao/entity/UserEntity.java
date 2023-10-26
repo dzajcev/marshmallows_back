@@ -1,5 +1,6 @@
 package com.dzaitsev.marshmallows.dao.entity;
 
+import com.dzaitsev.marshmallows.dto.Price;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,14 +22,19 @@ public class UserEntity {
 
     @Column(name = "email")
     private String email;
+
     @Column(name = "first_name")
     private String firstName;
+
     @Column(name = "last_name")
     private String lastName;
+
     @Column(name = "password")
     private String password;
+
     @Column(name = "roles")
     private String roles;
+
     @Column(name = "verified")
     private boolean verified;
 

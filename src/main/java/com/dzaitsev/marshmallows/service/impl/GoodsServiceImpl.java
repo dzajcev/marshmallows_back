@@ -17,14 +17,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class GoodsServiceImpl implements GoodsService {
+public class GoodsServiceImpl extends AbstractService implements GoodsService {
 
     private final GoodsRepository goodsRepository;
 
@@ -34,22 +33,22 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public List<Good> getGoods(Boolean isActive) {
-        Stream<GoodEntity> result;
+        Iterable<GoodEntity> result;
         if (Boolean.TRUE.equals(isActive)) {
-            result = goodsRepository.findGoodsEntitiesByActive(true);
+            result = goodsRepository.findGoodsEntitiesByActiveAndUserCreate(true, getUserFromContext().getId());
         } else if (Boolean.FALSE.equals(isActive)) {
-            result = goodsRepository.findGoodsEntitiesByActive(false);
+            result = goodsRepository.findGoodsEntitiesByActiveAndUserCreate(false, getUserFromContext().getId());
         } else {
-            result = StreamSupport.stream(goodsRepository.findAll().spliterator(), false);
+            result = goodsRepository.findAllByUserCreate(getUserFromContext().getId());
         }
-        return result
+        return StreamSupport.stream(result.spliterator(), false)
                 .map(goodMapper::toDto)
                 .toList();
     }
 
     @Override
     public Good getGood(Integer id) {
-        return goodsRepository.findById(id)
+        return goodsRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .map(goodMapper::toDto)
                 .orElseThrow(() -> new GoodNotFoundException(String.format("good with id %s not found", id)));
     }
@@ -57,7 +56,7 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public void saveGood(Good good) {
         GoodEntity goodEntity = Optional.ofNullable(good.getId())
-                .flatMap(m -> goodsRepository.findById(good.getId()))
+                .flatMap(m -> goodsRepository.findByIdAndUserCreate(good.getId(), getUserFromContext().getId()))
                 .orElse(GoodEntity.builder()
                         .build());
         goodEntity.setName(good.getName());
@@ -90,7 +89,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public void deleteGood(Integer id) {
-        goodsRepository.findById(id)
+        goodsRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .ifPresent(goodEntity -> {
                     if (!goodEntity.getOrderLines().isEmpty()) {
                         goodEntity.setActive(false);
@@ -102,13 +101,13 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public void restoreGood(Integer id) {
-        goodsRepository.findById(id)
+        goodsRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .ifPresent(clientEntity -> clientEntity.setActive(true));
     }
 
     @Override
     public boolean goodWithOrderLines(Integer id) {
-        return goodsRepository.findById(id)
+        return goodsRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .map(m -> !m.getOrderLines().isEmpty()).orElse(false);
     }
 }

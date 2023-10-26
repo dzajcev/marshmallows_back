@@ -2,6 +2,7 @@ package com.dzaitsev.marshmallows.controllers;
 
 import com.dzaitsev.marshmallows.dto.auth.*;
 import com.dzaitsev.marshmallows.service.AuthenticationService;
+import com.dzaitsev.marshmallows.service.VerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
+
+    private final VerificationService verificationService;
 
 
     @PostMapping("/signup")
@@ -28,12 +31,12 @@ public class AuthenticationController {
 
     @PostMapping("/verify-code")
     public ResponseEntity<JwtAuthenticationResponse> verifyCode(@RequestBody VerificationCodeRequest request) {
-        return ResponseEntity.ok(authenticationService.verifyCode(request));
+        return ResponseEntity.ok(verificationService.verifyCode(request));
     }
 
     @PostMapping("/send-code")
     public ResponseEntity<Void> sendCode() {
-        authenticationService.sendVerificationCode();
+        verificationService.sendVerificationCode();
         return ResponseEntity.noContent().build();
     }
 }

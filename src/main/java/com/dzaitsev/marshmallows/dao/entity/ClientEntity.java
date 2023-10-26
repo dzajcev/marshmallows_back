@@ -10,22 +10,14 @@ import java.util.List;
 @Table(name = "clients")
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class ClientEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class ClientEntity extends AbstractEntity{
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "is_active")
     private boolean active;
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
 
     @Column(name = "default_delivery_address")
     private String defaultDeliveryAddress;
@@ -42,9 +34,17 @@ public class ClientEntity {
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "client")
     private List<OrderEntity> orders;
 
-    @PrePersist
-    private void prePersist() {
-        createDate = LocalDateTime.now();
+    @Builder
+    public ClientEntity(Integer id, LocalDateTime createDate, Integer userCreate, LocalDateTime updateDate, Integer userUpdate,
+                        String name, boolean active, String defaultDeliveryAddress, String phone, String linkChannels, String comment, List<OrderEntity> orders) {
+        super(id, createDate, userCreate, updateDate, userUpdate);
+        this.name = name;
+        this.active = active;
+        this.defaultDeliveryAddress = defaultDeliveryAddress;
+        this.phone = phone;
+        this.linkChannels = linkChannels;
+        this.comment = comment;
+        this.orders = orders;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.dzaitsev.marshmallows.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,7 +23,9 @@ public class User implements UserDetails {
     private String email;
     private String firstName;
     private String lastName;
+    @JsonIgnore
     private String password;
+    @JsonIgnore
     private boolean enabled;
 
     private List<UserRole> roles = new ArrayList<>();

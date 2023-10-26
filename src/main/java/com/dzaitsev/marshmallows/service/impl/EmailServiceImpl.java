@@ -32,12 +32,11 @@ public class EmailServiceImpl implements EmailService {
             helper.setTo(recipient);
             helper.setSubject(subject);
             helper.setText(html, true);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
-
         emailSender.send(mimeMessage);
         return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

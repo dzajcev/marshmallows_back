@@ -15,21 +15,19 @@ import java.util.List;
 @Table(name = "deliveries")
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeliveryEntity implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
+public class DeliveryEntity extends AbstractEntity implements Serializable {
+
     @Column(name = "delivery_date")
     private LocalDate deliveryDate;
+
     @Column(name = "start_time")
     private LocalTime start;
+
     @Column(name = "end_time")
     private LocalTime end;
+
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "delivery")
     private List<OrderEntity> orders = new ArrayList<>();
 
@@ -37,19 +35,14 @@ public class DeliveryEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private DeliveryStatus deliveryStatus;
 
-    @PrePersist
-    private void prePersist() {
-        createDate = LocalDateTime.now();
-    }
-
-    public DeliveryStatus getDeliveryStatus() {
-        if (getOrders() != null && (getOrders().stream().allMatch(OrderEntity::isShipped))) {
-            return DeliveryStatus.DONE;
-        } else if (getOrders() != null && (getOrders().stream().anyMatch(f -> !f.isShipped())
-                && getOrders().stream().anyMatch(OrderEntity::isShipped))) {
-            return DeliveryStatus.IN_PROGRESS;
-        } else {
-            return DeliveryStatus.NEW;
-        }
+    @Builder
+    public DeliveryEntity(Integer id, LocalDateTime createDate, Integer userCreate, LocalDateTime updateDate, Integer userUpdate,
+                          LocalDate deliveryDate, LocalTime start, LocalTime end, List<OrderEntity> orders, DeliveryStatus deliveryStatus) {
+        super(id, createDate, userCreate, updateDate, userUpdate);
+        this.deliveryDate = deliveryDate;
+        this.start = start;
+        this.end = end;
+        this.orders = orders;
+        this.deliveryStatus = deliveryStatus;
     }
 }

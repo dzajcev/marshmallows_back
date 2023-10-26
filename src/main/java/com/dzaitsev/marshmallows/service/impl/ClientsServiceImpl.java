@@ -18,7 +18,7 @@ import java.util.stream.StreamSupport;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ClientsServiceImpl implements ClientsService {
+public class ClientsServiceImpl extends AbstractService implements ClientsService {
 
     private final ClientRepository clientRepository;
 
@@ -26,28 +26,28 @@ public class ClientsServiceImpl implements ClientsService {
 
     @Override
     public List<Client> getClients(Boolean isActive) {
-        Stream<ClientEntity> result;
+        Iterable<ClientEntity> result;
         if (Boolean.TRUE.equals(isActive)) {
-            result = clientRepository.findClientEntitiesByActive(true);
+            result = clientRepository.findClientEntitiesByActiveAndUserCreate(true, getUserFromContext().getId());
         } else if (Boolean.FALSE.equals(isActive)) {
-            result = clientRepository.findClientEntitiesByActive(false);
+            result = clientRepository.findClientEntitiesByActiveAndUserCreate(false, getUserFromContext().getId());
         } else {
-            result = StreamSupport.stream(clientRepository.findAll().spliterator(), false);
+            result = clientRepository.findAllByUserCreate(getUserFromContext().getId());
         }
-        return result
+        return  StreamSupport.stream(result.spliterator(), false)
                 .map(clientMapper::toDto)
                 .toList();
     }
 
     @Override
     public boolean clientWithOrders(Integer id) {
-       return clientRepository.findById(id)
+        return clientRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .map(m -> !m.getOrders().isEmpty()).orElse(false);
     }
 
     @Override
     public Client getClient(Integer id) {
-        return clientRepository.findById(id)
+        return clientRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .map(clientMapper::toDto)
                 .orElseThrow(() -> new ClientNotFoundException(String.format("client with id %s not found", id)));
     }
@@ -56,7 +56,7 @@ public class ClientsServiceImpl implements ClientsService {
     public void saveClient(Client client) {
         ClientEntity cl = null;
         if (client.getId() != null) {
-            cl = clientRepository.findById(client.getId()).orElse(null);
+            cl = clientRepository.findByIdAndUserCreate(client.getId(), getUserFromContext().getId()).orElse(null);
         }
         if (cl == null) {
             cl = ClientEntity.builder()
@@ -75,7 +75,7 @@ public class ClientsServiceImpl implements ClientsService {
 
     @Override
     public void deleteClient(Integer id) {
-        clientRepository.findById(id)
+        clientRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .ifPresent(clientEntity -> {
                     if (!clientEntity.getOrders().isEmpty()) {
                         clientEntity.setActive(false);
@@ -87,7 +87,7 @@ public class ClientsServiceImpl implements ClientsService {
 
     @Override
     public void restoreClient(Integer id) {
-        clientRepository.findById(id)
+        clientRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .ifPresent(clientEntity -> clientEntity.setActive(true));
     }
 }

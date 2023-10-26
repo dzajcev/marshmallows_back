@@ -8,11 +8,11 @@ public enum ErrorCodes {
     AUTH004("Пользователь не найден"),
     AUTH005("Еще рано отправлять новый код"),
     AUTH006("Срок жизни токена истек"),
-
     AUTH007("Неверный логин или пароль"),
+    AUTH008("Требуется подтверждение учетной записи"),
     ;
 
-    private String text;
+    private final String text;
 
     ErrorCodes(String text) {
         this.text = text;

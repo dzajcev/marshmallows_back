@@ -9,19 +9,11 @@ import java.time.LocalDateTime;
 @Table(name = "order_lines")
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class OrderLineEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class OrderLineEntity extends AbstractEntity{
 
     @Column(name = "num")
     private Integer num;
-
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "good_id")
@@ -44,8 +36,17 @@ public class OrderLineEntity {
     @Column(name = "count")
     private Integer count;
 
-    @PrePersist
-    private void prePersist() {
-        createDate = LocalDateTime.now();
+    @Builder
+    public OrderLineEntity(Integer id, LocalDateTime createDate, Integer userCreate,
+                           LocalDateTime updateDate, Integer userUpdate, Integer num,
+                           GoodEntity good, Double price, PriceEntity realPrice, OrderEntity order, boolean done, Integer count) {
+        super(id, createDate, userCreate, updateDate, userUpdate);
+        this.num = num;
+        this.good = good;
+        this.price = price;
+        this.realPrice = realPrice;
+        this.order = order;
+        this.done = done;
+        this.count = count;
     }
 }

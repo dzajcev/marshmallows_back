@@ -22,13 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class DeliveryServiceImpl implements DeliveryService {
+public class DeliveryServiceImpl extends AbstractService implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
 
@@ -44,11 +45,12 @@ public class DeliveryServiceImpl implements DeliveryService {
         Map<Integer, Boolean> collect = delivery.getOrders().stream().collect(Collectors.toMap(Order::getId, Order::isShipped));
 
         DeliveryEntity deliveryEntity = Optional.ofNullable(delivery.getId())
-                .flatMap(deliveryRepository::findById)
+                .flatMap((Function<Integer, Optional<DeliveryEntity>>) id
+                        -> deliveryRepository.findByIdAndUserCreate(id, getUserFromContext().getId()))
                 .orElse(new DeliveryEntity());
 
 
-        Iterable<OrderEntity> orders = orderRepository.findAllById(orderIds);
+        Iterable<OrderEntity> orders = orderRepository.findAllByIdInAndUserCreate(orderIds, getUserFromContext().getId());
         deliveryEntity.getOrders().forEach(o -> o.setDelivery(null));
         deliveryEntity.getOrders().clear();
         orderRepository.saveAll(orders);
@@ -83,24 +85,24 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Delivery getDelivery(Integer id) {
-        return deliveryRepository.findById(id)
+        return deliveryRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .map(deliveryMapper::toDto)
                 .orElseThrow(() -> new DeliveryNotFoundException(String.format("delivery with id %s not found", id)));
     }
 
     @Override
     public List<Delivery> getDeliveries(LocalDate start, LocalDate end, List<DeliveryStatus> statuses) {
-        return deliveryRepository.findOrderEntitiesByCreateDateAfterAndCreateDateBeforeAndDeliveryStatusIn(Optional.ofNullable(start)
+        return deliveryRepository.findOrderEntitiesByCreateDateAfterAndCreateDateBeforeAndDeliveryStatusInAndUserCreate(Optional.ofNullable(start)
                                 .map(LocalDate::atStartOfDay).orElse(LocalDateTime.of(2020, 1, 1, 0, 0, 0)),
                         Optional.ofNullable(end)
                                 .map(LocalDate::atStartOfDay).orElse(LocalDateTime.of(2050, 1, 1, 0, 0, 0)),
-                        Optional.ofNullable(statuses).orElse(new ArrayList<>())).stream()
+                        Optional.ofNullable(statuses).orElse(new ArrayList<>()), getUserFromContext().getId()).stream()
                 .map(deliveryMapper::toDto).toList();
     }
 
     @Override
     public void deleteDelivery(Integer id) {
-        DeliveryEntity deliveryEntity = deliveryRepository.findById(id)
+        DeliveryEntity deliveryEntity = deliveryRepository.findByIdAndUserCreate(id, getUserFromContext().getId())
                 .orElseThrow(() -> new DeliveryNotFoundException(String.format("Доставка %s не найдена", id)));
         Delivery delivery = deliveryMapper.toDto(deliveryEntity);
         if (allowToDelete(delivery)) {

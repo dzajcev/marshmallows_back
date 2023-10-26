@@ -10,21 +10,12 @@ import java.util.List;
 @Table(name = "prices")
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class PriceEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class PriceEntity extends AbstractEntity{
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "good_id")
     private GoodEntity good;
-
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "realPrice")
     private List<OrderLineEntity> orderLines;
@@ -32,9 +23,12 @@ public class PriceEntity {
     @Column(name = "price")
     private Double price;
 
-
-    @PrePersist
-    private void prePersist(){
-        createDate=LocalDateTime.now();
+    @Builder
+    public PriceEntity(Integer id, LocalDateTime createDate, Integer userCreate, LocalDateTime updateDate, Integer userUpdate,
+                       GoodEntity good, List<OrderLineEntity> orderLines, Double price) {
+        super(id, createDate, userCreate, updateDate, userUpdate);
+        this.good = good;
+        this.orderLines = orderLines;
+        this.price = price;
     }
 }

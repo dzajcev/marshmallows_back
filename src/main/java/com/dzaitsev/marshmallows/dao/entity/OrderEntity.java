@@ -13,16 +13,8 @@ import java.util.List;
 @Table(name = "orders")
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class OrderEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
+public class OrderEntity extends AbstractEntity{
 
     @Column(name = "deadline_date")
     private LocalDate deadline;
@@ -69,9 +61,25 @@ public class OrderEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-
-    @PrePersist
-    private void prePersist() {
-        createDate = LocalDateTime.now();
+    @Builder
+    public OrderEntity(Integer id, LocalDateTime createDate, Integer userCreate, LocalDateTime updateDate, Integer userUpdate,
+                       LocalDate deadline, String comment, String deliveryAddress, String phone, ClientEntity client,
+                       List<OrderLineEntity> orderLines, Double prePaymentSum, Double paySum, boolean shipped,
+                       LocalDateTime completeDate, boolean needDelivery, DeliveryEntity delivery, boolean clientNotificated, OrderStatus orderStatus) {
+        super(id, createDate, userCreate, updateDate, userUpdate);
+        this.deadline = deadline;
+        this.comment = comment;
+        this.deliveryAddress = deliveryAddress;
+        this.phone = phone;
+        this.client = client;
+        this.orderLines = orderLines;
+        this.prePaymentSum = prePaymentSum;
+        this.paySum = paySum;
+        this.shipped = shipped;
+        this.completeDate = completeDate;
+        this.needDelivery = needDelivery;
+        this.delivery = delivery;
+        this.clientNotificated = clientNotificated;
+        this.orderStatus = orderStatus;
     }
 }

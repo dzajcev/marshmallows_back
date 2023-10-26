@@ -4,7 +4,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public interface JwtService {
     enum TokenType {
-        SIGN_IN(1), SIGN_UP(1);
+        SIGN_IN(30), SIGN_UP(30);
         private final int ttl;
 
         TokenType(int ttl) {

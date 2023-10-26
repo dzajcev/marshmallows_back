@@ -12,6 +12,11 @@
             <column name="create_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
             <column name="is_active" type="boolean">
                 <constraints nullable="false"/>
             </column>
@@ -31,6 +36,11 @@
             <column name="create_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
             <column name="price" type="float">
                 <constraints nullable="false"/>
             </column>
@@ -55,6 +65,11 @@
             <column name="create_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
             <column name="default_delivery_address" type="varchar(500)">
                 <constraints nullable="true"/>
             </column>
@@ -77,6 +92,11 @@
             <column name="create_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
             <column name="deadline_date" type="date">
                 <constraints nullable="false"/>
             </column>
@@ -120,6 +140,11 @@
             <column name="create_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
             <column name="good_id" type="int4">
                 <constraints nullable="false"/>
             </column>
@@ -165,6 +190,11 @@
             <column name="create_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
             <column name="delivery_date" type="date">
                 <constraints nullable="false"/>
             </column>
@@ -185,8 +215,6 @@
                                  referencedColumnNames="id"
                                  referencedTableName="deliveries"
                                  onUpdate="CASCADE"/>
-    </changeSet>
-    <changeSet id="2" author="dzaitsev">
         <createTable tableName="users">
             <column name="id" type="int4">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="usersPK"/>
@@ -239,5 +267,16 @@
         </createTable>
         <addPrimaryKey tableName="verification_codes" columnNames="id, user_id" constraintName="verificationCodesPK"/>
         <addAutoIncrement tableName="verification_codes" columnName="id"/>
+        <createTable tableName="jwt_tokens">
+            <column name="token" type="varchar(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="jwtTokenPK"/>
+            </column>
+            <column name="expire_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 </databaseChangeLog>

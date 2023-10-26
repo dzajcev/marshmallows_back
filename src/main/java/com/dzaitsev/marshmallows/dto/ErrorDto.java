@@ -7,10 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class ErrorDto {
-    private ErrorCodes errorCode;
-    private String message;
-
-    public ErrorDto(ErrorCodes errorCode) {
-        this.errorCode = errorCode;
-    }
+    private ErrorCodes code;
 }
