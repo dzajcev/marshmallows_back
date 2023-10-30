@@ -41,9 +41,6 @@ public class OrderEntity extends AbstractEntity{
     @Column(name = "pay_sum")
     private Double paySum;
 
-    @Column(name = "shipped")
-    private boolean shipped;
-
     @Column(name = "complete_date")
     private LocalDateTime completeDate;
 
@@ -64,7 +61,7 @@ public class OrderEntity extends AbstractEntity{
     @Builder
     public OrderEntity(Integer id, LocalDateTime createDate, Integer userCreate, LocalDateTime updateDate, Integer userUpdate,
                        LocalDate deadline, String comment, String deliveryAddress, String phone, ClientEntity client,
-                       List<OrderLineEntity> orderLines, Double prePaymentSum, Double paySum, boolean shipped,
+                       List<OrderLineEntity> orderLines, Double prePaymentSum, Double paySum,
                        LocalDateTime completeDate, boolean needDelivery, DeliveryEntity delivery, boolean clientNotificated, OrderStatus orderStatus) {
         super(id, createDate, userCreate, updateDate, userUpdate);
         this.deadline = deadline;
@@ -75,7 +72,6 @@ public class OrderEntity extends AbstractEntity{
         this.orderLines = orderLines;
         this.prePaymentSum = prePaymentSum;
         this.paySum = paySum;
-        this.shipped = shipped;
         this.completeDate = completeDate;
         this.needDelivery = needDelivery;
         this.delivery = delivery;

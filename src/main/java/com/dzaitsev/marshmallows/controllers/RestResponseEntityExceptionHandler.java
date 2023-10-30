@@ -21,7 +21,7 @@ public class RestResponseEntityExceptionHandler
 
     @ExceptionHandler(value
             = {OrderNotFoundException.class, ClientNotFoundException.class, PriceNotFoundException.class,
-            PriceNotFoundException.class, GoodNotFoundException.class})
+            PriceNotFoundException.class, GoodNotFoundException.class, InviteRequestNotFoundException.class})
     protected ResponseEntity<Object> handleConflict(
             RuntimeException ex, WebRequest request) {
         log.error("item not found error", ex);

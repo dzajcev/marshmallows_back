@@ -26,7 +26,6 @@ public class OrderMapper extends Mapper<Order, OrderEntity> {
                 .deadline(orderEntity.getDeadline())
                 .deliveryAddress(orderEntity.getDeliveryAddress())
                 .prePaymentSum(orderEntity.getPrePaymentSum())
-                .shipped(orderEntity.isShipped())
                 .phone(orderEntity.getPhone())
                 .needDelivery(orderEntity.isNeedDelivery())
                 .orderStatus(orderEntity.getOrderStatus())

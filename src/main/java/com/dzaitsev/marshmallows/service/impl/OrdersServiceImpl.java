@@ -58,7 +58,6 @@ public class OrdersServiceImpl extends AbstractService implements OrdersService 
         orderEntity.setDeadline(order.getDeadline());
         orderEntity.setDeliveryAddress(order.getDeliveryAddress());
         orderEntity.setPrePaymentSum(order.getPrePaymentSum());
-        orderEntity.setShipped(order.isShipped());
         orderEntity.setPaySum(order.getPaySum());
         orderEntity.setNeedDelivery(order.isNeedDelivery());
         client.getOrders().add(orderEntity);
@@ -77,22 +76,15 @@ public class OrdersServiceImpl extends AbstractService implements OrdersService 
                     orderLineEntity.setOrder(orderEntity);
                     orderLineEntity.setGood(goodEntity);
                     orderLineEntity.setCount(ol.getCount());
-                    orderLineEntity.setDone(orderEntity.isShipped() || ol.isDone());
+                    orderLineEntity.setDone(orderEntity.getOrderStatus() == OrderStatus.SHIPPED || orderEntity.getOrderStatus() == OrderStatus.IN_DELIVERY || ol.isDone());
                     orderLineEntity.setNum(ol.getNum());
                     orderLineEntity.setPrice(ol.getPrice());
                     orderLineEntity.setRealPrice(realPrice);
                 });
 
 
-        if (orderEntity.isShipped()) {
-            orderEntity.setOrderStatus(OrderStatus.SHIPPED);
-        } else if (orderEntity.getDelivery() != null) {
-            orderEntity.setOrderStatus(OrderStatus.IN_DELIVERY);
-        } else if (orderEntity.getOrderLines().stream().allMatch(OrderLineEntity::isDone)) {
-            orderEntity.setOrderStatus(OrderStatus.DONE);
-            if (orderEntity.getCompleteDate() == null) {
-                orderEntity.setCompleteDate(LocalDateTime.now());
-            }
+        if (orderEntity.getOrderStatus() == OrderStatus.DONE && orderEntity.getCompleteDate() == null) {
+            orderEntity.setCompleteDate(LocalDateTime.now());
         } else {
             orderEntity.setOrderStatus(OrderStatus.IN_PROGRESS);
             orderEntity.setCompleteDate(null);

@@ -1,12 +1,15 @@
 package com.dzaitsev.marshmallows.service.impl;
 
+import com.dzaitsev.marshmallows.dao.entity.AddDeliverymanRequestsEntity;
 import com.dzaitsev.marshmallows.dao.entity.UserEntity;
+import com.dzaitsev.marshmallows.dao.repository.AddDeliverymanRequestsRepository;
 import com.dzaitsev.marshmallows.dao.repository.UserRepository;
 import com.dzaitsev.marshmallows.dto.User;
-import com.dzaitsev.marshmallows.dto.auth.ChangePasswordRequest;
+import com.dzaitsev.marshmallows.dto.UserRole;
 import com.dzaitsev.marshmallows.dto.auth.SaveMyInfoRequest;
 import com.dzaitsev.marshmallows.exceptions.AuthorizationException;
 import com.dzaitsev.marshmallows.exceptions.ErrorCodes;
+import com.dzaitsev.marshmallows.exceptions.InviteRequestNotFoundException;
 import com.dzaitsev.marshmallows.mappers.UserMapper;
 import com.dzaitsev.marshmallows.service.UserService;
 import jakarta.transaction.Transactional;
@@ -15,11 +18,13 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +33,8 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+    private final AddDeliverymanRequestsRepository addDeliverymanRequestsRepository;
 
     @Override
     public UserDetailsService userDetailsService() {
@@ -45,7 +52,7 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .verified(user.isEnabled())
-                .roles(user.getRoles().stream().map(Enum::name).collect(Collectors.joining(";")))
+                .role(user.getRole())
                 .build();
         return userMapper.toDto(userRepository.save(userEntity));
     }
@@ -61,11 +68,51 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     @Override
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .map(userMapper::toDto);
+    }
+
+    @Override
+    public Collection<User> getAssociatedUser(UserRole role) {
+        return userRepository.findById(getUserFromContext().getId())
+                .map((Function<UserEntity, Collection<UserEntity>>) userEntity -> {
+                    switch (role) {
+                        case DELIVERYMAN -> {
+                            return userEntity.getDeliverymans();
+                        }
+                        case DEVELOPER -> {
+                            return userEntity.getDevelopers();
+                        }
+                        default -> throw new RuntimeException("unknown role");
+                    }
+                })
+                .map(m -> m.stream()
+                        .map(userMapper::toDto)
+                        .collect(Collectors.toSet())
+                )
+                .orElse(new HashSet<>());
+    }
+
+    @Override
+    public void addDeliveryman(Integer deliverymanId) {
+        addDeliverymanRequestsRepository.save(AddDeliverymanRequestsEntity.builder()
+                .deliverymanUserId(deliverymanId)
+                .build());
+
+    }
+
+    @Override
+    public void acceptInviteRequest(Integer requestId) {
+        AddDeliverymanRequestsEntity addDeliverymanRequestsEntity = addDeliverymanRequestsRepository.findById(requestId)
+                .filter(f -> f.getDeliverymanUserId().equals(getUserFromContext().getId()))
+                .orElseThrow(() -> new InviteRequestNotFoundException(String.format("Request %s not found", requestId)));
+        addDeliverymanRequestsEntity.setAcceptedDate(LocalDateTime.now());
+        UserEntity me = userRepository.findById(getUserFromContext().getId()).orElseThrow();
+        UserEntity inviting = userRepository.findById(addDeliverymanRequestsEntity.getUserCreate()).orElseThrow();
+        me.getDevelopers().add(inviting);
+        inviting.getDeliverymans().add(me);
     }
 
     private User getUserFromContext() {

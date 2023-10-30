@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="0_users" author="dzaitsev">
+        <createTable tableName="users">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="usersPK"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verified" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="users" columnName="id"/>
+        <createIndex tableName="users" indexName="usersEmailIdx" unique="true">
+            <column name="email"/>
+        </createIndex>
+        <createTable tableName="verification_codes">
+            <column name="id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ttl" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="verification_codes" columnNames="id, user_id" constraintName="verificationCodesPK"/>
+        <addAutoIncrement tableName="verification_codes" columnName="id"/>
+        <addForeignKeyConstraint baseTableName="verification_codes" baseColumnNames="user_id" constraintName="vcUiFk" referencedTableName="users"
+                                 referencedColumnNames="id" onUpdate="CASCADE" onDelete="SET NULL"/>
+
+        <createTable tableName="jwt_tokens">
+            <column name="token" type="varchar(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="jwtTokenPK"/>
+            </column>
+            <column name="expire_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="jwt_tokens" baseColumnNames="user_name" constraintName="jtUnFk" referencedTableName="users"
+                                 referencedColumnNames="email" onUpdate="CASCADE" onDelete="SET NULL"/>
+
+        <createTable tableName="developer_deliveryman">
+            <column name="developer_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deliveryman_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="developer_deliveryman" columnNames="developer_id,deliveryman_id"/>
+        <addForeignKeyConstraint baseTableName="developer_deliveryman" baseColumnNames="developer_id" constraintName="ddDiFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="developer_deliveryman" baseColumnNames="deliveryman_id" constraintName="ddDi1Fk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="add_deliverymen_requests">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="deliverymenRequestPK"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
+            <column name="deliveryman_user_id" type="int4"/>
+            <column name="accepted_date" type="timestamp"/>
+        </createTable>
+        <createIndex tableName="add_deliverymen_requests" indexName="deliverymanUserIdIdx">
+            <column name="deliveryman_user_id"/>
+        </createIndex>
+        <addAutoIncrement tableName="add_deliverymen_requests" columnName="id"/>
+        <addForeignKeyConstraint baseTableName="add_deliverymen_requests" baseColumnNames="deliveryman_user_id" constraintName="adrDuiFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="add_deliverymen_requests" baseColumnNames="user_create_id" constraintName="adrUcFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="add_deliverymen_requests" baseColumnNames="user_update_id" constraintName="adrUuFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

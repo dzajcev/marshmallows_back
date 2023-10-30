@@ -35,6 +35,11 @@ public class DeliveryEntity extends AbstractEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private DeliveryStatus deliveryStatus;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "executor_id")
+    private UserEntity executor;
+
     @Builder
     public DeliveryEntity(Integer id, LocalDateTime createDate, Integer userCreate, LocalDateTime updateDate, Integer userUpdate,
                           LocalDate deliveryDate, LocalTime start, LocalTime end, List<OrderEntity> orders, DeliveryStatus deliveryStatus) {

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="2_clients" author="dzaitsev">
+        <createTable tableName="clients">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="clientsPK"/>
+            </column>
+            <column name="name" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
+            <column name="default_delivery_address" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="is_active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="link_channels" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="varchar(1000)"/>
+        </createTable>
+        <addAutoIncrement tableName="clients" columnName="id"/>
+        <addForeignKeyConstraint baseTableName="clients" baseColumnNames="user_create_id" constraintName="cUciFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="clients" baseColumnNames="user_update_id" constraintName="cUuiFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

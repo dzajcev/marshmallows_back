@@ -69,7 +69,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             .firstName(m.getFirstName())
                             .email(m.getEmail())
                             .password(passwordEncoder.encode(m.getPassword()))
-                            .roles(m.getRoles())
+                            .role(m.getRole())
                             .build();
                     User save = userService.save(newUser);
                     verificationService.sendVerificationCode(save);

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1_goods" author="dzaitsev">
+        <createTable tableName="goods">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="goodsPK"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
+            <column name="is_active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)"/>
+        </createTable>
+        <addAutoIncrement tableName="goods" columnName="id"/>
+        <addForeignKeyConstraint baseTableName="goods" baseColumnNames="user_create_id" constraintName="gUciFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="goods" baseColumnNames="user_update_id" constraintName="gUuiFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createTable tableName="prices">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pricePK"/>
+            </column>
+            <column name="good_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
+            <column name="price" type="float">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="prices" columnName="id"/>
+        <createIndex tableName="prices" indexName="price_good_idx">
+            <column name="good_id"/>
+        </createIndex>
+        <addForeignKeyConstraint baseTableName="prices" baseColumnNames="user_create_id" constraintName="pUciFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="prices" baseColumnNames="user_update_id" constraintName="pUuiFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseColumnNames="good_id"
+                                 baseTableName="prices"
+                                 constraintName="fk_prices_good"
+                                 referencedColumnNames="id"
+                                 referencedTableName="goods"
+                                 onUpdate="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>

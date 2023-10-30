@@ -34,8 +34,6 @@ public class Order {
 
     private Double paySum;
 
-    private boolean shipped;
-
     private boolean needDelivery;
 
     private LocalDateTime completeDate;

@@ -32,7 +32,7 @@ private final CustomAuthenticationEntryPoint entryPoint;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/auth/signin", "/auth/signup")
+                .authorizeHttpRequests(request -> request.requestMatchers("/auth/signin", "/auth/signup", "/error")
                         .permitAll().anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(

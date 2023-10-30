@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -24,4 +23,6 @@ public class Delivery implements Serializable {
     private LocalTime end;
     private DeliveryStatus deliveryStatus;
     private List<Order> orders = new ArrayList<>();
+    private User executor;
+    private User createUser;
 }

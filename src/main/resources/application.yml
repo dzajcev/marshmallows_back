@@ -37,7 +37,7 @@ spring:
         order_inserts: true
         batch_versioned_data: true
 authorization:
-  verification-code-ttl: 180
+  verification-code-ttl: 10
   signing:
     key: fojsgdfuihdfogudfhdfguoidfilufjndoffnjknmkjlf
 logging:

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="3_orders" author="dzaitsev">
+        <createTable tableName="orders">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="ordersPK"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
+            <column name="deadline_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="varchar(1000)"/>
+            <column name="client_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pre_payment_sum" type="float"/>
+            <column name="pay_sum" type="float"/>
+            <column name="shipped" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="need_delivery" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="complete_date" type="timestamp"/>
+            <column name="delivery_address" type="varchar(500)"/>
+            <column name="delivery_id" type="int4"/>
+            <column name="client_notificated" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="varchar(20)"/>
+            <column name="order_status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="client_id"
+                                 baseTableName="orders"
+                                 constraintName="fk_clients_orders"
+                                 referencedColumnNames="id"
+                                 referencedTableName="clients"
+                                 onUpdate="CASCADE"/>
+        <addAutoIncrement tableName="orders" columnName="id"/>
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="user_create_id" constraintName="oUciFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="user_update_id" constraintName="oUuiFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createTable tableName="order_lines">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="orderLinesPK"/>
+            </column>
+            <column name="num" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="timestamp"/>
+            <column name="user_create_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_update_id" type="int4"/>
+            <column name="good_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="count" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="done" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="int4">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="good_id"
+                                 baseTableName="order_lines"
+                                 constraintName="fk_goods_order_lines"
+                                 referencedColumnNames="id"
+                                 referencedTableName="goods"
+                                 onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseColumnNames="price_id"
+                                 baseTableName="order_lines"
+                                 constraintName="fk_price_order_lines"
+                                 referencedColumnNames="id"
+                                 referencedTableName="prices"
+                                 onUpdate="RESTRICT"/>
+        <addForeignKeyConstraint baseColumnNames="order_id"
+                                 baseTableName="order_lines"
+                                 constraintName="fk_orders_order_lines"
+                                 referencedColumnNames="id"
+                                 referencedTableName="orders"
+                                 onUpdate="CASCADE"/>
+        <addAutoIncrement tableName="order_lines" columnName="id"/>
+        <addForeignKeyConstraint baseTableName="order_lines" baseColumnNames="user_create_id" constraintName="olUciFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="order_lines" baseColumnNames="user_update_id" constraintName="olUuiFk" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>
