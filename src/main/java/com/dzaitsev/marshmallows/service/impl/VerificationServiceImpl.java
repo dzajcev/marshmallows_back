@@ -9,7 +9,7 @@ import com.dzaitsev.marshmallows.dto.auth.ChangePasswordRequest;
 import com.dzaitsev.marshmallows.dto.auth.JwtAuthenticationResponse;
 import com.dzaitsev.marshmallows.dto.auth.VerificationCodeRequest;
 import com.dzaitsev.marshmallows.exceptions.AuthorizationException;
-import com.dzaitsev.marshmallows.exceptions.ErrorCodes;
+import com.dzaitsev.marshmallows.exceptions.ErrorCode;
 import com.dzaitsev.marshmallows.service.EmailService;
 import com.dzaitsev.marshmallows.service.JwtService;
 import com.dzaitsev.marshmallows.service.UserService;
@@ -64,7 +64,7 @@ public class VerificationServiceImpl implements VerificationService {
             lastCode = null;
         }
         if (lastCode != null && LocalDateTime.now().minusSeconds(verificationCodeTtl).isBefore(lastCode.getCreateDate())) {
-            throw new AuthorizationException(ErrorCodes.AUTH005, ErrorCodes.AUTH005.getText());
+            throw new AuthorizationException(ErrorCode.AUTH005, ErrorCode.AUTH005.getText());
         } else {
             sendVerificationCode(getUserFromContext());
         }
@@ -96,7 +96,7 @@ public class VerificationServiceImpl implements VerificationService {
         LinkedList<VerificationCodeEntity> verificationCodes = new LinkedList<>(verificationCodeRepository.getValidatingCodesByUserIdOrderByCreateDate(user.getId()));
         if (verificationCodes.isEmpty()) {
             log.warn("codes for user {} not exists", user.getEmail());
-            throw new AuthorizationException(ErrorCodes.AUTH002, String.format("Код для пользователя %s просрочен. Запросите новый", user.getEmail()));
+            throw new AuthorizationException(ErrorCode.AUTH002, String.format("Код для пользователя %s просрочен. Запросите новый", user.getEmail()));
         }
         return verificationCodes.getLast();
 
@@ -112,10 +112,10 @@ public class VerificationServiceImpl implements VerificationService {
             if (last.getTtl().isBefore(LocalDateTime.now())) {
                 log.warn("codes for user {} is expired", user.getEmail());
                 verificationCodeRepository.deleteAllByUserId(user.getId());
-                throw new AuthorizationException(ErrorCodes.AUTH002, String.format("Код для пользователя %s просрочен. Запросите новый", user.getEmail()));
+                throw new AuthorizationException(ErrorCode.AUTH002, String.format("Код для пользователя %s просрочен. Запросите новый", user.getEmail()));
             }
             if (!request.getCode().equals(last.getCode())) {
-                throw new AuthorizationException(ErrorCodes.AUTH001, String.format("Код для пользователя %s не корректный", user.getEmail()));
+                throw new AuthorizationException(ErrorCode.AUTH001, String.format("Код для пользователя %s не корректный", user.getEmail()));
             }
             user.setEnabled(true);
             userService.save(user);
@@ -131,7 +131,7 @@ public class VerificationServiceImpl implements VerificationService {
         return Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
                 .map(m -> (User) m.getPrincipal())
-                .orElseThrow(() -> new AuthorizationException(ErrorCodes.AUTH004, ErrorCodes.AUTH004.getText()));
+                .orElseThrow(() -> new AuthorizationException(ErrorCode.AUTH004, ErrorCode.AUTH004.getText()));
     }
 
     @Override

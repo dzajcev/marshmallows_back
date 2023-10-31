@@ -6,10 +6,10 @@ import org.springframework.security.core.AuthenticationException;
 @Getter
 public class AuthorizationException extends AuthenticationException {
 
-    private final ErrorCodes errorCodes;
+    private final ErrorCode errorCode;
 
-    public AuthorizationException( ErrorCodes errorCodes,String message) {
+    public AuthorizationException(ErrorCode errorCode, String message) {
         super(message);
-        this.errorCodes = errorCodes;
+        this.errorCode = errorCode;
     }
 }

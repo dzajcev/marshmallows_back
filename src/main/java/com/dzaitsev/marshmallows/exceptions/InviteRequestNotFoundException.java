@@ -1,10 +1,8 @@
 package com.dzaitsev.marshmallows.exceptions;
 
-public class InviteRequestNotFoundException extends RuntimeException{
-    public InviteRequestNotFoundException() {
-    }
+public class InviteRequestNotFoundException extends AbstractNotFoundException {
 
-    public InviteRequestNotFoundException(String message) {
-        super(message);
+    public InviteRequestNotFoundException() {
+        super(ErrorCode.IR001);
     }
 }

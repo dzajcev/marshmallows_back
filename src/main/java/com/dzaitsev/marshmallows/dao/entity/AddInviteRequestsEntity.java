@@ -15,15 +15,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AddDeliverymanRequestsEntity extends AbstractEntity {
+public class AddInviteRequestsEntity extends AbstractEntity {
     @Column(name = "deliveryman_user_id")
     private Integer deliverymanUserId;
     @Column(name = "accepted_date")
     private LocalDateTime acceptedDate;
 
     @Builder
-    public AddDeliverymanRequestsEntity(Integer id, LocalDateTime createDate, Integer userCreate,
-                                        LocalDateTime updateDate, Integer userUpdate, Integer deliverymanUserId, LocalDateTime acceptedDate) {
+    public AddInviteRequestsEntity(Integer id, LocalDateTime createDate, Integer userCreate,
+                                   LocalDateTime updateDate, Integer userUpdate, Integer deliverymanUserId, LocalDateTime acceptedDate) {
         super(id, createDate, userCreate, updateDate, userUpdate);
         this.deliverymanUserId = deliverymanUserId;
         this.acceptedDate = acceptedDate;

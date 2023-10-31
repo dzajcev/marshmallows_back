@@ -1,6 +1,6 @@
 package com.dzaitsev.marshmallows.exceptions;
 
-public enum ErrorCodes {
+public enum ErrorCode {
     AUTH000("Неизвестная ошибка"),
     AUTH001("Код верификации не верный"),
     AUTH002("Код верификации просрочен"),
@@ -10,11 +10,17 @@ public enum ErrorCodes {
     AUTH006("Срок жизни токена истек"),
     AUTH007("Неверный логин или пароль"),
     AUTH008("Требуется подтверждение учетной записи"),
+
+    IU001("Пользователь с таким логином не найден"),
+
+    DEL001("Доставка не найдена"),
+
+    IR001("Приглашение не найдено"),
     ;
 
     private final String text;
 
-    ErrorCodes(String text) {
+    ErrorCode(String text) {
         this.text = text;
     }
 

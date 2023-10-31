@@ -6,7 +6,7 @@ import com.dzaitsev.marshmallows.dto.auth.JwtSignUpResponse;
 import com.dzaitsev.marshmallows.dto.auth.SignInRequest;
 import com.dzaitsev.marshmallows.dto.auth.SignUpRequest;
 import com.dzaitsev.marshmallows.exceptions.AuthorizationException;
-import com.dzaitsev.marshmallows.exceptions.ErrorCodes;
+import com.dzaitsev.marshmallows.exceptions.ErrorCode;
 import com.dzaitsev.marshmallows.service.AuthenticationService;
 import com.dzaitsev.marshmallows.service.JwtService;
 import com.dzaitsev.marshmallows.service.UserService;
@@ -61,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 userService.save(user);
                             }
                         } else {
-                            throw new AuthorizationException(ErrorCodes.AUTH003, ErrorCodes.AUTH003.getText());
+                            throw new AuthorizationException(ErrorCode.AUTH003, ErrorCode.AUTH003.getText());
                         }
                     }
                     User newUser = User.builder()
@@ -97,7 +97,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
                 .map(m -> (User) m.getPrincipal())
-                .orElseThrow(() -> new AuthorizationException(ErrorCodes.AUTH004, ErrorCodes.AUTH004.getText()));
+                .orElseThrow(() -> new AuthorizationException(ErrorCode.AUTH004, ErrorCode.AUTH004.getText()));
     }
 
 }

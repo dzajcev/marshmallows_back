@@ -19,4 +19,7 @@ public interface DeliveryRepository extends CrudRepository<DeliveryEntity, Integ
     @Query("SELECT d FROM DeliveryEntity d WHERE d.id=?1 AND (d.userCreate=?2 OR d.executor.id=?2)")
     Optional<DeliveryEntity> findById(Integer id, Integer userCreate);
 
+    @Query("SELECT d FROM DeliveryEntity d WHERE d.userCreate=?1 AND d.executor.id=?2 AND d.deliveryStatus<>'DONE'")
+    List<DeliveryEntity> findProcessingDeliveriesByCreateUserAndExecutor(Integer userCreate, Integer executor);
+
 }

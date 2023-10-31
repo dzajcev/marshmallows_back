@@ -6,7 +6,7 @@ spring:
     host: smtp.mail.ru
     port: 465
     username: marshmallow_1@bk.ru
-    password: iQnuxaVZKxmxxQHRrtmX
+    password:
     smtps:
       auth: true
     properties:
@@ -40,6 +40,6 @@ authorization:
   verification-code-ttl: 10
   signing:
     key: fojsgdfuihdfogudfhdfguoidfilufjndoffnjknmkjlf
-logging:
-  level:
-    org.springframework.security: debug
+#logging:
+#  level:
+#    org.springframework.security: debug

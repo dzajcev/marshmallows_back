@@ -2,7 +2,7 @@ package com.dzaitsev.marshmallows.service.impl;
 
 import com.dzaitsev.marshmallows.dto.User;
 import com.dzaitsev.marshmallows.exceptions.AuthorizationException;
-import com.dzaitsev.marshmallows.exceptions.ErrorCodes;
+import com.dzaitsev.marshmallows.exceptions.ErrorCode;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -14,6 +14,6 @@ public abstract class AbstractService {
         return Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
                 .map(m -> (User) m.getPrincipal())
-                .orElseThrow(() -> new AuthorizationException(ErrorCodes.AUTH004, ErrorCodes.AUTH004.getText()));
+                .orElseThrow(() -> new AuthorizationException(ErrorCode.AUTH004, ErrorCode.AUTH004.getText()));
     }
 }

@@ -1,9 +1,10 @@
 package com.dzaitsev.marshmallows.controllers;
 
 import com.dzaitsev.marshmallows.dto.ErrorDto;
-import com.dzaitsev.marshmallows.exceptions.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.dzaitsev.marshmallows.exceptions.AbstractNotFoundException;
+import com.dzaitsev.marshmallows.exceptions.AuthorizationException;
+import com.dzaitsev.marshmallows.exceptions.DeleteDeliveryNotAllowException;
+import com.dzaitsev.marshmallows.exceptions.DeleteOrderNotAllowException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,13 +20,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestResponseEntityExceptionHandler
         extends ResponseEntityExceptionHandler {
 
+    //    @ExceptionHandler(value
+//            = {OrderNotFoundException.class, ClientNotFoundException.class, PriceNotFoundException.class,
+//            PriceNotFoundException.class, GoodNotFoundException.class, InviteRequestNotFoundException.class, DeliveryExecutorNotFoundException.class})
     @ExceptionHandler(value
-            = {OrderNotFoundException.class, ClientNotFoundException.class, PriceNotFoundException.class,
-            PriceNotFoundException.class, GoodNotFoundException.class, InviteRequestNotFoundException.class})
+            = {AbstractNotFoundException.class})
     protected ResponseEntity<Object> handleConflict(
-            RuntimeException ex, WebRequest request) {
+            AbstractNotFoundException ex, WebRequest request) {
         log.error("item not found error", ex);
-        return handleExceptionInternal(ex, ex.getMessage(),
+        return handleExceptionInternal(ex, new ErrorDto(ex.getErrorCode(), ex.getErrorCode().getText()),
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
@@ -43,7 +46,7 @@ public class RestResponseEntityExceptionHandler
     protected ResponseEntity<Object> forbidden(
             AuthorizationException ex, WebRequest request) {
         log.error("authorization error", ex);
-        return handleExceptionInternal(ex, new ErrorDto(ex.getErrorCodes()),
+        return handleExceptionInternal(ex, new ErrorDto(ex.getErrorCode(), ex.getErrorCode().getText()),
                 new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 }

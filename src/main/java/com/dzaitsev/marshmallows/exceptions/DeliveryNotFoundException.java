@@ -1,7 +1,8 @@
 package com.dzaitsev.marshmallows.exceptions;
 
-public class DeliveryNotFoundException extends RuntimeException{
-    public DeliveryNotFoundException(String message) {
-        super(message);
+public class DeliveryNotFoundException extends AbstractNotFoundException{
+
+    public DeliveryNotFoundException() {
+        super(ErrorCode.DEL001);
     }
 }

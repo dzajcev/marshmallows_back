@@ -26,9 +26,6 @@
             </column>
             <column name="pre_payment_sum" type="float"/>
             <column name="pay_sum" type="float"/>
-            <column name="shipped" type="boolean">
-                <constraints nullable="false"/>
-            </column>
             <column name="need_delivery" type="boolean">
                 <constraints nullable="false"/>
             </column>

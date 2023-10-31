@@ -2,7 +2,7 @@ package com.dzaitsev.marshmallows.dao.entity;
 
 import com.dzaitsev.marshmallows.dto.User;
 import com.dzaitsev.marshmallows.exceptions.AuthorizationException;
-import com.dzaitsev.marshmallows.exceptions.ErrorCodes;
+import com.dzaitsev.marshmallows.exceptions.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -53,6 +53,6 @@ public abstract class AbstractEntity {
         return Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
                 .map(m -> (User) m.getPrincipal())
-                .orElseThrow(() -> new AuthorizationException(ErrorCodes.AUTH004, ErrorCodes.AUTH004.getText()));
+                .orElseThrow(() -> new AuthorizationException(ErrorCode.AUTH004, ErrorCode.AUTH004.getText()));
     }
 }

@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -30,8 +29,8 @@ public class OrderController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public OrdersResponse getOrder(@PathVariable(value = "id") Integer id) {
-        return new OrdersResponse(Collections.singletonList(ordersService.getOrder(id)));
+    public Order getOrder(@PathVariable(value = "id") Integer id) {
+        return ordersService.getOrder(id);
     }
 
     @GetMapping(value = "/delivery", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -54,12 +53,13 @@ public class OrderController {
 
     @GetMapping(value = "/notification/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public boolean clientIsNotificated(@PathVariable("id") Integer id){
+    public boolean clientIsNotificated(@PathVariable("id") Integer id) {
         return ordersService.clientIsNotificated(id);
     }
+
     @PutMapping(value = "/notification/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void setClientIsNotificated(@PathVariable("id") Integer id){
+    public void setClientIsNotificated(@PathVariable("id") Integer id) {
         ordersService.setClientIsNotificated(id);
     }
 

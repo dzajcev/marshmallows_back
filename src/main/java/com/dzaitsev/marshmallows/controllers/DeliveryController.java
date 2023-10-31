@@ -2,7 +2,6 @@ package com.dzaitsev.marshmallows.controllers;
 
 import com.dzaitsev.marshmallows.dto.Delivery;
 import com.dzaitsev.marshmallows.dto.DeliveryStatus;
-import com.dzaitsev.marshmallows.dto.OrderStatus;
 import com.dzaitsev.marshmallows.dto.response.DeliveryResponse;
 import com.dzaitsev.marshmallows.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -33,8 +30,8 @@ public class DeliveryController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public DeliveryResponse getDelivery(@PathVariable(value = "id") Integer id) {
-        return new DeliveryResponse(Collections.singletonList(deliveryService.getDelivery(id)));
+    public Delivery getDelivery(@PathVariable(value = "id") Integer id) {
+        return deliveryService.getDelivery(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

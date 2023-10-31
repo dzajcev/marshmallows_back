@@ -83,19 +83,18 @@ public class DeliveryServiceImpl extends AbstractService implements DeliveryServ
     }
 
     private UserEntity getExecutor(User user) {
+        //todo: codes
         return Optional.ofNullable(user)
                 .map(User::getId)
                 .or(() -> Optional.of(getUserFromContext().getId()))
-                .flatMap(userRepository::findById).orElseThrow(() -> {
-                    return new DeliveryExecutorNotFoundException("");//todo: codes
-                });
+                .flatMap(userRepository::findById).orElseThrow(DeliveryExecutorNotFoundException::new);
     }
 
     @Override
     public Delivery getDelivery(Integer id) {
         return deliveryRepository.findById(id, getUserFromContext().getId())
                 .map(deliveryMapper::toDto)
-                .orElseThrow(() -> new DeliveryNotFoundException(String.format("delivery with id %s not found", id)));
+                .orElseThrow(DeliveryNotFoundException::new);
     }
 
     @Override
@@ -111,7 +110,7 @@ public class DeliveryServiceImpl extends AbstractService implements DeliveryServ
     @Override
     public void deleteDelivery(Integer id) {
         DeliveryEntity deliveryEntity = deliveryRepository.findById(id, getUserFromContext().getId())
-                .orElseThrow(() -> new DeliveryNotFoundException(String.format("Доставка %s не найдена", id)));
+                .orElseThrow(DeliveryNotFoundException::new);
         Delivery delivery = deliveryMapper.toDto(deliveryEntity);
         if (allowToDelete(delivery)) {
             deliveryEntity.getOrders().forEach(o -> o.setDelivery(null));

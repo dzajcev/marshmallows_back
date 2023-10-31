@@ -1,11 +1,7 @@
 package com.dzaitsev.marshmallows.controllers;
 
-import com.dzaitsev.marshmallows.dto.UserRole;
 import com.dzaitsev.marshmallows.dto.auth.ChangePasswordRequest;
 import com.dzaitsev.marshmallows.dto.auth.SaveMyInfoRequest;
-import com.dzaitsev.marshmallows.dto.request.AcceptInviteRequest;
-import com.dzaitsev.marshmallows.dto.request.AddDeliverymanRequest;
-import com.dzaitsev.marshmallows.dto.response.AssociatedUsersResponse;
 import com.dzaitsev.marshmallows.dto.response.UserInfoResponse;
 import com.dzaitsev.marshmallows.service.AuthenticationService;
 import com.dzaitsev.marshmallows.service.UserService;
@@ -47,23 +43,5 @@ public class UsersController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/get-associated-users")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<AssociatedUsersResponse> getAssociatedUser(@RequestParam("role") UserRole role) {
-        return ResponseEntity.ok(new AssociatedUsersResponse(userService.getAssociatedUser(role)));
-    }
 
-    @PostMapping("add-deliveryman")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<AssociatedUsersResponse> addDeliveryman(@RequestBody AddDeliverymanRequest request) {
-        userService.addDeliveryman(request.getUserId());
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("accept-invite-request")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<AssociatedUsersResponse> acceptInviteRequest(@RequestBody AcceptInviteRequest request) {
-        userService.acceptInviteRequest(request.getRequestId());
-        return ResponseEntity.noContent().build();
-    }
 }

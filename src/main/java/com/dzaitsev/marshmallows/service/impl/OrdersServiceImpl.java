@@ -81,13 +81,14 @@ public class OrdersServiceImpl extends AbstractService implements OrdersService 
                     orderLineEntity.setPrice(ol.getPrice());
                     orderLineEntity.setRealPrice(realPrice);
                 });
-
-
-        if (orderEntity.getOrderStatus() == OrderStatus.DONE && orderEntity.getCompleteDate() == null) {
-            orderEntity.setCompleteDate(LocalDateTime.now());
-        } else {
-            orderEntity.setOrderStatus(OrderStatus.IN_PROGRESS);
-            orderEntity.setCompleteDate(null);
+        orderEntity.setOrderStatus(order.getOrderStatus());
+        if (order.getOrderStatus() != OrderStatus.IN_DELIVERY && order.getOrderStatus() != OrderStatus.SHIPPED) {
+            if (order.getOrderStatus() == OrderStatus.DONE && orderEntity.getCompleteDate() == null) {
+                orderEntity.setCompleteDate(LocalDateTime.now());
+            } else {
+                orderEntity.setOrderStatus(OrderStatus.IN_PROGRESS);
+                orderEntity.setCompleteDate(null);
+            }
         }
         orderRepository.save(orderEntity);
     }

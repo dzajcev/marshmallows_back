@@ -1,11 +1,14 @@
 package com.dzaitsev.marshmallows.service;
 
+import com.dzaitsev.marshmallows.dto.InviteRequest;
+import com.dzaitsev.marshmallows.dto.InviterRequestDirection;
 import com.dzaitsev.marshmallows.dto.User;
 import com.dzaitsev.marshmallows.dto.UserRole;
 import com.dzaitsev.marshmallows.dto.auth.SaveMyInfoRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -17,10 +20,7 @@ public interface UserService {
 
     Optional<User> findByEmail(String email);
 
-    Collection<User> getAssociatedUser(UserRole userRole);
+    Optional<User> findById(Integer id);
 
-    void addDeliveryman(Integer deliverymanId);
-
-    void acceptInviteRequest(Integer requestId);
-
+    User getUserFromContext();
 }
